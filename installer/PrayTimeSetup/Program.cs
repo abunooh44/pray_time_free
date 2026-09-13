@@ -18,7 +18,7 @@ internal static class Program
 {
     private const string AppName = "PrayTime";
     private const string DisplayName = "مواقيت — أوقات الصلاة";
-    private const string Version = "1.0.0";
+    private const string Version = "1.1.0";
     private const string ExeName = "PrayTime.exe";
 
     private const string UninstallKey =
