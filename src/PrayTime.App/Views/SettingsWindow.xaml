@@ -498,11 +498,18 @@
                                      Style="{StaticResource Input.Number}" />
                         </StackPanel>
 
-                        <Button Margin="0,22,0,0"
-                                HorizontalAlignment="Right"
-                                Click="OnOpenLogs"
-                                Content="فتح مجلد السجلات"
-                                Style="{StaticResource Btn.Base}" />
+                        <StackPanel Margin="0,22,0,0"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                            <Button Click="OnOpenLogs"
+                                    Content="فتح مجلد السجلات"
+                                    Style="{StaticResource Btn.Base}" />
+                            <Button x:Name="BtnAbout"
+                                    Margin="10,0,0,0"
+                                    Click="OnShowAbout"
+                                    Content="عن التطبيق"
+                                    Style="{StaticResource Btn.Base}" />
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

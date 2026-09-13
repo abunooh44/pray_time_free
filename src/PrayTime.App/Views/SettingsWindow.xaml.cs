@@ -240,6 +240,8 @@ public partial class SettingsWindow : Window
 
     private void OnOpenLogs(object sender, RoutedEventArgs e) => OpenFolder(AppPaths.Logs);
 
+    private void OnShowAbout(object sender, RoutedEventArgs e) => _shell.ShowAbout();
+
     private static void OpenFolder(string path)
     {
         try

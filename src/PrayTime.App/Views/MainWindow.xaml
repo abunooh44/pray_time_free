@@ -278,7 +278,9 @@
 
                 <TextBlock x:Name="CopyrightLine"
                            Margin="0,4,0,0"
+                           Padding="6,2"
                            HorizontalAlignment="Center"
+                           Background="Transparent"
                            Cursor="Hand"
                            FontSize="11"
                            Foreground="{DynamicResource B.TextFaint}"
