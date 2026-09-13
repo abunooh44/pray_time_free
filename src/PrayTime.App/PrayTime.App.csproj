@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>false</UseWindowsForms>
+    <AssemblyName>PrayTime</AssemblyName>
+    <RootNamespace>PrayTime.App</RootNamespace>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <DebugType>embedded</DebugType>
+    <!-- WPF لا يدعم التشذيب إطلاقًا؛ تفعيله ينتج تطبيقًا ينهار عند الإقلاع. -->
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PrayTime.Core\PrayTime.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ملفات الصوت تُنسخ بجوار التنفيذي في مجلد audio ظاهر،
+         حتى يستطيع المستخدم استبدالها بملفاته بسهولة. -->
+    <Content Include="Assets\audio\*.mp3">
+      <Link>audio\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+</Project>

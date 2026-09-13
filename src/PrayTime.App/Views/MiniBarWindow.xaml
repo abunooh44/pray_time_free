@@ -1,0 +1,62 @@
+<Window x:Class="PrayTime.App.Views.MiniBarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="مواقيت — الشريط المصغّر"
+        AllowsTransparency="True"
+        Background="Transparent"
+        FlowDirection="RightToLeft"
+        FontFamily="{StaticResource F.Ui}"
+        ShowActivated="False"
+        ShowInTaskbar="False"
+        SizeToContent="WidthAndHeight"
+        Topmost="True"
+        WindowStyle="None">
+
+    <!--  بلا خلفية صلبة: يندمج مع شريط المهام كعنصر أصلي، ويُبرز فقط عند المرور  -->
+    <Border x:Name="Shell"
+            Padding="10,4,14,4"
+            Background="#01000000"
+            CornerRadius="6"
+            Cursor="Hand"
+            TextElement.Foreground="#FFFFFF">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#26FFFFFF" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
+        <StackPanel Orientation="Horizontal">
+
+            <!--  أيقونة التطبيق نفسها: هوية بصرية واحدة بلا رسم يدوي قد يفشل  -->
+            <Image x:Name="Badge"
+                   Width="28"
+                   Height="28"
+                   Margin="0,0,11,0"
+                   VerticalAlignment="Center"
+                   RenderOptions.BitmapScalingMode="HighQuality"
+                   Source="pack://application:,,,/Assets/app.ico" />
+
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock x:Name="CountdownText"
+                           FontFamily="{StaticResource F.Numeric}"
+                           FlowDirection="LeftToRight"
+                           HorizontalAlignment="Right"
+                           MinWidth="66"
+                           TextAlignment="Right"
+                           FontSize="17"
+                           FontWeight="SemiBold"
+                           Text="--:--" />
+
+                <TextBlock x:Name="CaptionText"
+                           Margin="0,1,0,0"
+                           FontSize="11.5"
+                           Opacity="0.78"
+                           Text="" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

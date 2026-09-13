@@ -1,0 +1,185 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <FontFamily x:Key="F.Ui">Segoe UI, Tahoma, Arial</FontFamily>
+    <FontFamily x:Key="F.Display">Segoe UI Semibold, Segoe UI, Tahoma</FontFamily>
+    <!--  الأرقام دائمًا بخط لاتيني ذي عرض ثابت حتى لا يرتجف العدّاد التنازلي.  -->
+    <FontFamily x:Key="F.Numeric">Consolas, Cascadia Mono, Segoe UI</FontFamily>
+
+    <sys:Double x:Key="R.Card">16</sys:Double>
+    <CornerRadius x:Key="CR.Card">16</CornerRadius>
+    <CornerRadius x:Key="CR.Row">12</CornerRadius>
+    <CornerRadius x:Key="CR.Button">10</CornerRadius>
+
+    <!--  ============ نص ============  -->
+
+    <Style x:Key="T.Base" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource F.Ui}" />
+        <Setter Property="Foreground" Value="{DynamicResource B.Text}" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+    </Style>
+
+    <Style x:Key="T.Dim" BasedOn="{StaticResource T.Base}" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource B.TextDim}" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style x:Key="T.Faint" BasedOn="{StaticResource T.Base}" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource B.TextFaint}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="T.SectionTitle" BasedOn="{StaticResource T.Base}" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource B.Gold}" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+    </Style>
+
+    <Style x:Key="T.Numeric" BasedOn="{StaticResource T.Base}" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource F.Numeric}" />
+        <Setter Property="FlowDirection" Value="LeftToRight" />
+    </Style>
+
+    <!--  ============ أزرار ============  -->
+
+    <Style x:Key="Btn.Base" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource F.Ui}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource B.Text}" />
+        <Setter Property="Background" Value="{DynamicResource B.SurfaceAlt}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource B.Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource CR.Button}">
+                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource B.Gold}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.75" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.4" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Btn.Primary" BasedOn="{StaticResource Btn.Base}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource B.GoldSweep}" />
+        <Setter Property="Foreground" Value="#12181F" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style x:Key="Btn.Danger" BasedOn="{StaticResource Btn.Base}" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource B.Danger}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource B.Danger}" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!--  زر أيقونة دائري صغير (كتم، إغلاق، تصغير)  -->
+    <Style x:Key="Btn.Icon" TargetType="Button">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource B.TextDim}" />
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource B.SurfaceAlt}" />
+                            <Setter Property="Foreground" Value="{DynamicResource B.Text}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  ============ حقول الإدخال ============  -->
+
+    <Style x:Key="Input.Base" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource F.Ui}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource B.Text}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource B.Gold}" />
+        <Setter Property="Background" Value="{DynamicResource B.SurfaceAlt}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource B.Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource B.Gold}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  الأرقام تُكتب دائمًا يسار-إلى-يمين حتى داخل واجهة عربية  -->
+    <Style x:Key="Input.Number" BasedOn="{StaticResource Input.Base}" TargetType="TextBox">
+        <Setter Property="FlowDirection" Value="LeftToRight" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Width" Value="72" />
+    </Style>
+
+    <!--  ============ بطاقة ============  -->
+
+    <Style x:Key="RowStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="{StaticResource CR.Row}" />
+        <Setter Property="Padding" Value="14,11" />
+        <Setter Property="Margin" Value="0,2" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource B.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource B.Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CR.Card}" />
+        <Setter Property="Padding" Value="20" />
+    </Style>
+
+</ResourceDictionary>

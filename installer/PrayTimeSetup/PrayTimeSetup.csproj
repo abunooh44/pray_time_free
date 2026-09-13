@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- ‎-windows‎ لأن المثبّت يكتب في سجل ويندز؛ بدونه تحذيرات CA1416 -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>PrayTimeSetup</RootNamespace>
+    <AssemblyName>PrayTimeSetup</AssemblyName>
+    <ApplicationIcon>..\..\src\PrayTime.App\Assets\app.ico</ApplicationIcon>
+    <DebugType>embedded</DebugType>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- المثبّت لا يستخدم WPF، فالتشذيب آمن هنا ويقلّص الحجم من ~٦٥ إلى ~١٥ م.ب -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+    <AssemblyTitle>مثبّت مواقيت</AssemblyTitle>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- حمولة التثبيت: تُنشأ بسكربت البناء قبل بناء هذا المشروع -->
+    <EmbeddedResource Include="payload.zip" Condition="Exists('payload.zip')" LogicalName="payload.zip" />
+  </ItemGroup>
+
+</Project>

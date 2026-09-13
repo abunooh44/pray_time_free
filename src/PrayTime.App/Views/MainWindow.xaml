@@ -1,0 +1,290 @@
+<Window x:Class="PrayTime.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:vm="clr-namespace:PrayTime.App.ViewModels"
+        Title="مواقيت"
+        Width="430"
+        Height="790"
+        MinWidth="380"
+        MinHeight="660"
+        d:DataContext="{d:DesignInstance vm:MainViewModel}"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Background="{DynamicResource B.AppBackdrop}"
+        FlowDirection="RightToLeft"
+        FontFamily="{StaticResource F.Ui}"
+        Icon="pack://application:,,,/Assets/app.ico"
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None">
+
+    <shell:WindowChrome.WindowChrome>
+        <!--  شريط عنوان مخصص مع الحفاظ على السحب والتحجيم والالتصاق في ويندز ١١  -->
+        <shell:WindowChrome CaptionHeight="46"
+                            CornerRadius="0"
+                            GlassFrameThickness="0"
+                            ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  ======== شريط العنوان ========  -->
+        <Grid Grid.Row="0" Height="32">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <Ellipse Width="9"
+                         Height="9"
+                         Margin="2,0,8,0"
+                         Fill="{DynamicResource B.Teal}" />
+                <TextBlock VerticalAlignment="Center"
+                           FontSize="12"
+                           Style="{StaticResource T.Faint}"
+                           Text="يعمل في الخلفية" />
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Orientation="Horizontal">
+                <Button x:Name="BtnSettings"
+                        Click="OnSettingsClick"
+                        Content="&#xE713;"
+                        Style="{StaticResource Btn.Icon}"
+                        ToolTip="الإعدادات" />
+                <Button x:Name="BtnMinimize"
+                        Click="OnMinimizeClick"
+                        Content="&#xE921;"
+                        Style="{StaticResource Btn.Icon}"
+                        ToolTip="تصغير" />
+                <Button x:Name="BtnClose"
+                        Click="OnCloseClick"
+                        Content="&#xE8BB;"
+                        Style="{StaticResource Btn.Icon}"
+                        ToolTip="إخفاء إلى شريط المهام" />
+            </StackPanel>
+        </Grid>
+
+        <!--  ======== الساعة والتاريخ ========  -->
+        <StackPanel Grid.Row="1" Margin="4,6,4,16">
+            <TextBlock HorizontalAlignment="Center"
+                       FontSize="42"
+                       FontWeight="Light"
+                       Style="{StaticResource T.Numeric}"
+                       Text="{Binding Clock}" />
+
+            <TextBlock Margin="0,4,0,0"
+                       HorizontalAlignment="Center"
+                       FontSize="13"
+                       Style="{StaticResource T.Dim}">
+                <Run Text="{Binding Weekday, Mode=OneWay}" />
+                <Run Text="—" />
+                <Run Text="{Binding GregorianDate, Mode=OneWay}" />
+            </TextBlock>
+
+            <TextBlock Margin="0,3,0,0"
+                       HorizontalAlignment="Center"
+                       FontSize="13"
+                       Foreground="{DynamicResource B.Gold}"
+                       Style="{StaticResource T.Base}"
+                       Text="{Binding HijriDate}" />
+
+            <TextBlock Margin="0,8,0,0"
+                       HorizontalAlignment="Center"
+                       Style="{StaticResource T.Faint}"
+                       Text="{Binding LocationName}" />
+        </StackPanel>
+
+        <!--  ======== بطاقة الصلاة القادمة ========  -->
+        <Border Grid.Row="2" Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center"
+                           Style="{StaticResource T.Faint}"
+                           Text="{Binding CountdownCaption}" />
+
+                <TextBlock Margin="0,6,0,0"
+                           HorizontalAlignment="Center"
+                           FontSize="37"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource B.Gold}"
+                           Style="{StaticResource T.Numeric}"
+                           Text="{Binding Countdown}" />
+
+                <StackPanel Margin="0,6,0,0"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                    <TextBlock FontSize="15"
+                               FontWeight="SemiBold"
+                               Style="{StaticResource T.Base}"
+                               Text="{Binding NextPrayerName}" />
+                    <TextBlock Margin="8,0,0,0"
+                               FontSize="15"
+                               Style="{StaticResource T.Dim}"
+                               Text="{Binding NextPrayerTime}" />
+                </StackPanel>
+
+                <!--  شريط تقدّم الوقت الحالي  -->
+                <Border x:Name="ProgressTrack"
+                        Height="5"
+                        Margin="0,16,0,0"
+                        Background="{DynamicResource B.SurfaceAlt}"
+                        CornerRadius="3">
+                    <Border x:Name="ProgressFill"
+                            HorizontalAlignment="Right"
+                            Background="{DynamicResource B.GoldSweep}"
+                            CornerRadius="3" />
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!--  ======== قائمة المواقيت ========  -->
+        <Border Grid.Row="3" Margin="0,14,0,0" Style="{StaticResource Card}">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding Rows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:PrayerRowViewModel}">
+                        <Border x:Name="Row" Style="{StaticResource RowStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--  مؤشّر الصلاة القادمة  -->
+                                <Border x:Name="Marker"
+                                        Grid.Column="0"
+                                        Width="3"
+                                        Height="18"
+                                        Margin="0,0,10,0"
+                                        Background="Transparent"
+                                        CornerRadius="2" />
+
+                                <TextBlock x:Name="NameText"
+                                           Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           FontSize="15"
+                                           Style="{StaticResource T.Base}"
+                                           Text="{Binding Name}" />
+
+                                <TextBlock x:Name="TimeText"
+                                           Grid.Column="2"
+                                           VerticalAlignment="Center"
+                                           FontSize="16"
+                                           Style="{StaticResource T.Numeric}"
+                                           Text="{Binding TimeText}" />
+
+                                <TextBlock x:Name="MuteIcon"
+                                           Grid.Column="3"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource B.TextFaint}"
+                                           Text="&#xE74F;"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                <Setter TargetName="Row" Property="Background" Value="{DynamicResource B.SurfaceAlt}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsNext}" Value="True">
+                                <Setter TargetName="Marker" Property="Background" Value="{DynamicResource B.Gold}" />
+                                <Setter TargetName="NameText" Property="Foreground" Value="{DynamicResource B.Gold}" />
+                                <Setter TargetName="NameText" Property="FontWeight" Value="SemiBold" />
+                                <Setter TargetName="TimeText" Property="Foreground" Value="{DynamicResource B.Gold}" />
+                                <Setter TargetName="TimeText" Property="FontWeight" Value="SemiBold" />
+                                <Setter TargetName="Row" Property="BorderBrush" Value="{DynamicResource B.Line}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsMuted}" Value="True">
+                                <Setter TargetName="MuteIcon" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="NameText" Property="Opacity" Value="0.55" />
+                                <Setter TargetName="TimeText" Property="Opacity" Value="0.55" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Prayer}" Value="Sunrise">
+                                <Setter TargetName="NameText" Property="Foreground" Value="{DynamicResource B.TextDim}" />
+                                <Setter TargetName="TimeText" Property="Foreground" Value="{DynamicResource B.TextDim}" />
+                                <Setter TargetName="NameText" Property="FontSize" Value="13" />
+                                <Setter TargetName="TimeText" Property="FontSize" Value="14" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+                    <Border Height="1"
+                            Margin="6,14,6,12"
+                            Background="{DynamicResource B.Line}" />
+
+                    <Grid Margin="14,0,14,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource T.Faint}" Text="منتصف الليل الشرعي" />
+                            <TextBlock Margin="0,3,0,0"
+                                       FontSize="15"
+                                       Style="{StaticResource T.Numeric}"
+                                       Text="{Binding IslamicMidnight}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Style="{StaticResource T.Faint}" Text="الثلث الأخير من الليل" />
+                            <TextBlock Margin="0,3,0,0"
+                                       FontSize="15"
+                                       Style="{StaticResource T.Numeric}"
+                                       Text="{Binding LastThird}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!--  ======== الشريط السفلي ========  -->
+        <Grid Grid.Row="4" Margin="0,14,0,0">
+            <Button x:Name="BtnStop"
+                    HorizontalAlignment="Stretch"
+                    Click="OnStopAudioClick"
+                    Style="{StaticResource Btn.Danger}"
+                    Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="0,0,8,0"
+                               FontFamily="Segoe MDL2 Assets"
+                               Text="&#xE74F;" />
+                    <TextBlock Text="{Binding PlayingLabel, StringFormat='إيقاف {0}'}" />
+                </StackPanel>
+            </Button>
+
+            <StackPanel x:Name="StatusText"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock HorizontalAlignment="Center"
+                           Style="{StaticResource T.Faint}"
+                           Text="{Binding Status}" />
+
+                <TextBlock x:Name="CopyrightLine"
+                           Margin="0,4,0,0"
+                           HorizontalAlignment="Center"
+                           Cursor="Hand"
+                           FontSize="11"
+                           Foreground="{DynamicResource B.TextFaint}"
+                           MouseLeftButtonUp="OnCopyrightClick"
+                           ToolTip="عن التطبيق" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

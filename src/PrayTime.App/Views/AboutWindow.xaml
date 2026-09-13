@@ -1,0 +1,138 @@
+<Window x:Class="PrayTime.App.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="عن التطبيق"
+        Width="440"
+        SizeToContent="Height"
+        Background="{DynamicResource B.Bg}"
+        FlowDirection="RightToLeft"
+        FontFamily="{StaticResource F.Ui}"
+        Icon="pack://application:,,,/Assets/app.ico"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None">
+
+    <Border Padding="28,24"
+            Background="{DynamicResource B.Surface}"
+            BorderBrush="{DynamicResource B.Line}"
+            BorderThickness="1"
+            CornerRadius="18">
+        <StackPanel>
+
+            <!--  الهوية  -->
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Image Width="46"
+                       Height="46"
+                       VerticalAlignment="Center"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       Source="pack://application:,,,/Assets/app.ico" />
+                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                    <TextBlock FontSize="22"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource B.Gold}"
+                               Style="{StaticResource T.Base}"
+                               Text="مواقيت" />
+                    <TextBlock x:Name="VersionText"
+                               Style="{StaticResource T.Faint}"
+                               Text="الإصدار 1.0.0" />
+                </StackPanel>
+            </StackPanel>
+
+            <TextBlock Margin="0,16,0,0"
+                       HorizontalAlignment="Center"
+                       Style="{StaticResource T.Dim}"
+                       Text="منبّه أوقات الصلاة — بوشر، مسقط"
+                       TextAlignment="Center" />
+
+            <Border Height="1"
+                    Margin="0,20"
+                    Background="{DynamicResource B.Line}" />
+
+            <!--  شعار الحماية  -->
+            <Border Padding="16,14"
+                    Background="{DynamicResource B.SurfaceAlt}"
+                    CornerRadius="12">
+                <StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="15"
+                                   Foreground="{DynamicResource B.Teal}"
+                                   Text="&#xE72E;" />
+                        <TextBlock Margin="8,0,0,0"
+                                   VerticalAlignment="Center"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource B.Teal}"
+                                   Style="{StaticResource T.Base}"
+                                   Text="مجاني للاستخدام" />
+                    </StackPanel>
+
+                    <TextBlock Margin="0,10,0,0"
+                               HorizontalAlignment="Center"
+                               Style="{StaticResource T.Dim}"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Text="هذا التطبيق مجاني تمامًا. يجوز استخدامه ونسخه وتوزيعه بلا مقابل، ولا يجوز بيعه أو المتاجرة به." />
+                </StackPanel>
+            </Border>
+
+            <!--  الحقوق وبيانات المطوّر  -->
+            <StackPanel Margin="0,20,0,0">
+                <Grid Margin="0,0,0,8">
+                    <TextBlock Style="{StaticResource T.Faint}" Text="المطوّر" />
+                    <TextBlock x:Name="DeveloperText"
+                               HorizontalAlignment="Left"
+                               Style="{StaticResource T.Base}"
+                               FontSize="13" />
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <TextBlock Style="{StaticResource T.Faint}" Text="للتواصل" />
+                    <TextBlock x:Name="PhoneText"
+                               HorizontalAlignment="Left"
+                               FlowDirection="LeftToRight"
+                               FontFamily="{StaticResource F.Numeric}"
+                               FontSize="13"
+                               Foreground="{DynamicResource B.Gold}"
+                               Style="{StaticResource T.Base}" />
+                </Grid>
+
+                <Grid>
+                    <TextBlock Style="{StaticResource T.Faint}" Text="الحقوق" />
+                    <TextBlock x:Name="CopyrightText"
+                               HorizontalAlignment="Left"
+                               Style="{StaticResource T.Dim}" />
+                </Grid>
+            </StackPanel>
+
+            <TextBlock Margin="0,18,0,0"
+                       HorizontalAlignment="Center"
+                       Style="{StaticResource T.Faint}"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       Text="نسأل الله أن يتقبّل، وأن يجعله في ميزان حسنات كل من ساهم فيه." />
+
+            <Grid Margin="0,22,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Click="OnOpenProject"
+                        Content="صفحة المشروع"
+                        Style="{StaticResource Btn.Base}" />
+
+                <Button Grid.Column="2"
+                        Click="OnClose"
+                        Content="إغلاق"
+                        IsCancel="True"
+                        IsDefault="True"
+                        Style="{StaticResource Btn.Primary}" />
+            </Grid>
+        </StackPanel>
+    </Border>
+</Window>
