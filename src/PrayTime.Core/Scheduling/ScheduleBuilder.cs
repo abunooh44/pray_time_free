@@ -36,9 +36,23 @@ public static class ScheduleBuilder
                 // الإقامة مستقلة عن الأذان: يمكن كتم الأذان وإبقاء تنبيه الإقامة.
                 if (config.IqamaEnabled && config.IqamaDelayMinutes > 0)
                 {
+                    var iqamaAt = at.AddMinutes(config.IqamaDelayMinutes);
+
                     events.Add(new PrayerEvent(
-                        prayer, EventKind.Iqama, at.AddMinutes(config.IqamaDelayMinutes),
-                        iqamaTolerance, config.IqamaSound, volume));
+                        prayer, EventKind.Iqama, iqamaAt, iqamaTolerance, config.IqamaSound, volume));
+
+                    if (settings.Behavior.PreIqamaAction != PreIqamaAction.None)
+                    {
+                        // لا يسبق الأذانَ أبدًا: لو كان تأخير الإقامة أقصر من مهلة الإجراء
+                        // لصار التنبيه قبل دخول الوقت أصلًا.
+                        var actionAt = iqamaAt.AddMinutes(-settings.Behavior.PreIqamaMinutes);
+                        if (actionAt < at) actionAt = at;
+
+                        events.Add(new PrayerEvent(
+                            prayer, EventKind.PreIqama, actionAt,
+                            // تسامح ضيّق: إنامة الجهاز بعد فوات الوقت بكثير تصرّف مزعج بلا فائدة.
+                            TimeSpan.FromMinutes(1), string.Empty, 0));
+                    }
                 }
             }
         }

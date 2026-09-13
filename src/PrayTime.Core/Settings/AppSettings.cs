@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using PrayTime.Core.Calculation;
 using PrayTime.Core.Model;
+using PrayTime.Core.Scheduling;
 using PrayTime.Core.Security;
 
 namespace PrayTime.Core.Settings;
@@ -225,6 +226,10 @@ public sealed class BehaviorSettings : Observable
     private int _adhanToleranceMinutes = 5;
     private int _iqamaToleranceMinutes = 2;
     private int _startupGraceSeconds = 60;
+    private PreIqamaAction _preIqamaAction = PreIqamaAction.None;
+    private int _preIqamaMinutes = 5;
+    private int _preIqamaWarningSeconds = 45;
+    private int _lockDurationMinutes = 20;
 
     public bool StartWithWindows { get => _startWithWindows; set => Set(ref _startWithWindows, value); }
     public bool HideOnClose { get => _hideOnClose; set => Set(ref _hideOnClose, value); }
@@ -236,6 +241,24 @@ public sealed class BehaviorSettings : Observable
 
     /// <summary>مهلة صمت بعد إقلاع التطبيق، حتى لا ينطلق أذان فور تسجيل الدخول.</summary>
     public int StartupGraceSeconds { get => _startupGraceSeconds; set => Set(ref _startupGraceSeconds, Math.Clamp(value, 0, 600)); }
+
+    /// <summary>ما يُفعل بالجهاز قبل الإقامة: لا شيء، أو إنامته، أو قفل الشاشة.</summary>
+    public PreIqamaAction PreIqamaAction { get => _preIqamaAction; set => Set(ref _preIqamaAction, value); }
+
+    /// <summary>كم دقيقة قبل الإقامة يُنفَّذ الإجراء.</summary>
+    public int PreIqamaMinutes { get => _preIqamaMinutes; set => Set(ref _preIqamaMinutes, Math.Clamp(value, 0, 30)); }
+
+    /// <summary>
+    /// مهلة التحذير قبل التنفيذ. إنامة الجهاز بلا إنذار قد تُضيع عملًا غير محفوظ،
+    /// فنعرض عدًّا تنازليًا يمكن إلغاؤه.
+    /// </summary>
+    public int PreIqamaWarningSeconds { get => _preIqamaWarningSeconds; set => Set(ref _preIqamaWarningSeconds, Math.Clamp(value, 5, 300)); }
+
+    /// <summary>
+    /// كم دقيقة تبقى الشاشة مقفولة بعد القفل.
+    /// قفل ويندز وحده يُفتح فورًا؛ الحارس يعيد القفل خلال هذه المدة. صفر يعطّل الحارس.
+    /// </summary>
+    public int LockDurationMinutes { get => _lockDurationMinutes; set => Set(ref _lockDurationMinutes, Math.Clamp(value, 0, 60)); }
 }
 
 public sealed class SecuritySettings : Observable

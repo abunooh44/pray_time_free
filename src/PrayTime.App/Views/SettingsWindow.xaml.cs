@@ -81,6 +81,13 @@ public partial class SettingsWindow : Window
         RequirePinCheck.IsChecked = _settings.Security.RequirePinForExit;
         ToleranceBox.Text = Fmt(_settings.Behavior.AdhanToleranceMinutes);
 
+        PreIqamaBox.SelectedIndex = (int)_settings.Behavior.PreIqamaAction;
+        PreIqamaMinutesBox.Text = Fmt(_settings.Behavior.PreIqamaMinutes);
+        PreIqamaWarnBox.Text = Fmt(_settings.Behavior.PreIqamaWarningSeconds);
+        LockDurationBox.Text = Fmt(_settings.Behavior.LockDurationMinutes);
+        PreIqamaBox.SelectionChanged += (_, _) => UpdateLockDurationVisibility();
+        UpdateLockDurationVisibility();
+
         UpdatePinStatus();
         UpdateAutoStartWarning();
         UpdateTimeZoneWarning();
@@ -240,7 +247,27 @@ public partial class SettingsWindow : Window
 
     private void OnOpenLogs(object sender, RoutedEventArgs e) => OpenFolder(AppPaths.Logs);
 
+    /// <summary>مدة القفل تخصّ وضع القفل وحده؛ إظهارها مع الإنامة يربك المستخدم.</summary>
+    private void UpdateLockDurationVisibility() =>
+        LockDurationPanel.Visibility = PreIqamaBox.SelectedIndex == (int)PreIqamaAction.Lock
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
     private void OnShowAbout(object sender, RoutedEventArgs e) => _shell.ShowAbout();
+
+    /// <summary>يعرض التحذير فورًا ليرى المستخدم ما سيحدث قبل أن يعتمد عليه.</summary>
+    private void OnTestPreIqama(object sender, RoutedEventArgs e)
+    {
+        var action = (PreIqamaAction)Math.Max(0, PreIqamaBox.SelectedIndex);
+        if (action == PreIqamaAction.None)
+        {
+            SaveHint.Text = "اختر إجراءً أولاً (إنامة أو قفل).";
+            return;
+        }
+
+        var seconds = TryNum(PreIqamaWarnBox.Text, out var v) ? (int)Math.Clamp(v, 5, 300) : 45;
+        _shell.TestPreIqamaWarning(action, seconds);
+    }
 
     private static void OpenFolder(string path)
     {
@@ -401,6 +428,15 @@ public partial class SettingsWindow : Window
         if (string.IsNullOrWhiteSpace(LocationNameBox.Text))
             return Fail("اسم الموقع لا يمكن أن يكون فارغًا.");
 
+        if (!TryNum(PreIqamaMinutesBox.Text, out var preIqamaMinutes) || preIqamaMinutes is < 0 or > 30)
+            return Fail("مدة ما قبل الإقامة يجب أن تكون بين ٠ و٣٠ دقيقة.");
+
+        if (!TryNum(LockDurationBox.Text, out var lockDuration) || lockDuration is < 0 or > 60)
+            return Fail("مدة بقاء الشاشة مقفولة يجب أن تكون بين ٠ و٦٠ دقيقة.");
+
+        if (!TryNum(PreIqamaWarnBox.Text, out var preIqamaWarn) || preIqamaWarn is < 5 or > 300)
+            return Fail("مهلة التحذير يجب أن تكون بين ٥ و٣٠٠ ثانية.");
+
         // كل شيء صالح: ننقل القيم إلى الإعدادات الحيّة.
         _settings.Location.Name = LocationNameBox.Text.Trim();
         _settings.Location.Latitude = lat;
@@ -430,6 +466,11 @@ public partial class SettingsWindow : Window
         _settings.Behavior.AdhanToleranceMinutes = (int)tolerance;
 
         _settings.Security.RequirePinForExit = RequirePinCheck.IsChecked == true;
+
+        _settings.Behavior.PreIqamaAction = (PreIqamaAction)Math.Max(0, PreIqamaBox.SelectedIndex);
+        _settings.Behavior.PreIqamaMinutes = (int)preIqamaMinutes;
+        _settings.Behavior.PreIqamaWarningSeconds = (int)preIqamaWarn;
+        _settings.Behavior.LockDurationMinutes = (int)lockDuration;
 
         return true;
     }

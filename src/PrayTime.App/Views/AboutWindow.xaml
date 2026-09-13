@@ -83,7 +83,7 @@
                 <Grid Margin="0,0,0,8">
                     <TextBlock Style="{StaticResource T.Faint}" Text="المطوّر" />
                     <TextBlock x:Name="DeveloperText"
-                               HorizontalAlignment="Left"
+                               HorizontalAlignment="Right"
                                Style="{StaticResource T.Base}"
                                FontSize="13" />
                 </Grid>
@@ -91,7 +91,7 @@
                 <Grid Margin="0,0,0,8">
                     <TextBlock Style="{StaticResource T.Faint}" Text="للتواصل" />
                     <TextBlock x:Name="PhoneText"
-                               HorizontalAlignment="Left"
+                               HorizontalAlignment="Right"
                                FlowDirection="LeftToRight"
                                FontFamily="{StaticResource F.Numeric}"
                                FontSize="13"
@@ -102,7 +102,7 @@
                 <Grid>
                     <TextBlock Style="{StaticResource T.Faint}" Text="الحقوق" />
                     <TextBlock x:Name="CopyrightText"
-                               HorizontalAlignment="Left"
+                               HorizontalAlignment="Right"
                                Style="{StaticResource T.Dim}" />
                 </Grid>
             </StackPanel>

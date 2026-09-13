@@ -19,6 +19,7 @@ public sealed class AppShell : IDisposable
     private AdhanPopupWindow? _popup;
     private MiniBarWindow? _miniBar;
     private AboutWindow? _aboutWindow;
+    private PreIqamaWarningWindow? _preIqamaWindow;
     private SettingsWindow? _settingsWindow;
     private MainWindow? _mainWindow;
 
@@ -35,6 +36,7 @@ public sealed class AppShell : IDisposable
         Audio = new AudioService();
         Pin = new PinService(Store, Settings);
         Scheduler = new SchedulerHost(Settings, Store, Ledger, dispatcher);
+        LockGuard = new PrayerLockGuard(dispatcher);
         Main = new MainViewModel(Settings, Scheduler);
         Tray = new TrayIconService(this);
 
@@ -49,6 +51,7 @@ public sealed class AppShell : IDisposable
     public AudioService Audio { get; }
     public PinService Pin { get; }
     public SchedulerHost Scheduler { get; }
+    public PrayerLockGuard LockGuard { get; }
     public MainViewModel Main { get; }
     public TrayIconService Tray { get; }
 
@@ -68,6 +71,12 @@ public sealed class AppShell : IDisposable
 
     private void OnEventDue(PrayerEvent e)
     {
+        if (e.Kind == EventKind.PreIqama)
+        {
+            ShowPreIqamaWarning(e);
+            return;
+        }
+
         var error = Audio.Play(
             e.SoundFile,
             e.Volume,
@@ -84,6 +93,27 @@ public sealed class AppShell : IDisposable
 
         if (Settings.Ui.ShowAdhanPopup) ShowPopup(e);
         else Tray.ShowBalloon(e.ArabicLabel, $"حان الآن وقت {e.Prayer.Ar()}");
+    }
+
+    /// <summary>تحذير قبل إنامة الجهاز أو قفله استعدادًا للإقامة.</summary>
+    private void ShowPreIqamaWarning(PrayerEvent e)
+    {
+        var action = Settings.Behavior.PreIqamaAction;
+        if (action == PreIqamaAction.None) return;
+
+        _preIqamaWindow ??= new PreIqamaWarningWindow(this);
+        _preIqamaWindow.Present(e, action, Settings.Behavior.PreIqamaWarningSeconds);
+    }
+
+    /// <summary>تجربة يدوية للتحذير من نافذة الإعدادات، ليرى المستخدم ما سيحدث قبل أن يعتمد عليه.</summary>
+    public void TestPreIqamaWarning(PreIqamaAction action, int seconds)
+    {
+        var sample = new PrayerEvent(
+            Scheduler.Engine.NextPrayer?.Prayer ?? Prayer.Dhuhr,
+            EventKind.PreIqama, DateTimeOffset.Now, TimeSpan.FromMinutes(1), string.Empty, 0);
+
+        _preIqamaWindow ??= new PreIqamaWarningWindow(this);
+        _preIqamaWindow.Present(sample, action, seconds);
     }
 
     private void ShowPopup(PrayerEvent e)
@@ -296,6 +326,7 @@ public sealed class AppShell : IDisposable
         Scheduler.Ticked -= OnTicked;
 
         Scheduler.Dispose();
+        LockGuard.Dispose();
         Audio.Dispose();
         Tray.Dispose();
 

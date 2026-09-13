@@ -458,6 +458,70 @@
                                 Margin="0,20"
                                 Background="{DynamicResource B.Line}" />
 
+                        <TextBlock Style="{StaticResource T.SectionTitle}" Text="التفرّغ للصلاة" />
+                        <TextBlock Margin="0,-6,0,10"
+                                   Style="{StaticResource T.Faint}"
+                                   TextWrapping="Wrap"
+                                   Text="قبل الإقامة بدقائق، يُنهي التطبيق جلسة الحاسب لتتفرّغ للصلاة. يظهر عدّاد تنازلي يمكنك تأجيله." />
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource T.Dim}"
+                                       Text="الإجراء" />
+                            <ComboBox x:Name="PreIqamaBox"
+                                      Width="210"
+                                      Margin="12,0,0,0"
+                                      Style="{StaticResource Combo.Base}">
+                                <ComboBoxItem Content="لا شيء" />
+                                <ComboBoxItem Content="إنامة الجهاز" />
+                                <ComboBoxItem Content="قفل الشاشة برمز ويندز" />
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource T.Dim}"
+                                       Text="قبل الإقامة بـ (دقيقة)" />
+                            <TextBox x:Name="PreIqamaMinutesBox"
+                                     Margin="12,0,0,0"
+                                     Style="{StaticResource Input.Number}" />
+
+                            <TextBlock Margin="20,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Style="{StaticResource T.Dim}"
+                                       Text="مهلة التحذير (ثانية)" />
+                            <TextBox x:Name="PreIqamaWarnBox"
+                                     Margin="12,0,0,0"
+                                     Style="{StaticResource Input.Number}" />
+                        </StackPanel>
+
+                        <StackPanel x:Name="LockDurationPanel"
+                                    Margin="0,12,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource T.Dim}"
+                                       Text="تبقى الشاشة مقفولة (دقيقة)" />
+                            <TextBox x:Name="LockDurationBox"
+                                     Margin="12,0,0,0"
+                                     Style="{StaticResource Input.Number}" />
+                        </StackPanel>
+
+                        <TextBlock Margin="0,8,0,0"
+                                   Style="{StaticResource T.Faint}"
+                                   TextWrapping="Wrap"
+                                   Text="قفل ويندز يُفتح برمزك فورًا؛ لذلك يعيد التطبيق القفل خلال هذه المدة. ولأن الطوارئ تقع، يتوقّف الحارس بعد خمس محاولات فتح. صفر يعني قفلاً عادياً بلا حارس." />
+
+                        <Button x:Name="BtnTestPreIqama"
+                                Margin="0,14,0,0"
+                                HorizontalAlignment="Right"
+                                Click="OnTestPreIqama"
+                                Content="تجربة التحذير الآن"
+                                Style="{StaticResource Btn.Base}" />
+
+                        <Border Height="1"
+                                Margin="0,20"
+                                Background="{DynamicResource B.Line}" />
+
                         <TextBlock Style="{StaticResource T.SectionTitle}" Text="رمز الخروج" />
 
                         <CheckBox x:Name="RequirePinCheck"
