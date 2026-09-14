@@ -18,12 +18,11 @@ public sealed class PrayerLockGuard : IDisposable
     /// <summary>مهلة قصيرة قبل إعادة القفل: القفل الفوري أثناء تسجيل الدخول يفشل أحيانًا.</summary>
     private static readonly TimeSpan RelockDelay = TimeSpan.FromSeconds(2);
 
-    private const int MaxRelocks = 5;
-
     private readonly Dispatcher _dispatcher;
 
     private DateTimeOffset? _lockUntil;
     private int _relockCount;
+    private int _maxRelocks = 5;
     private bool _disposed;
 
     public PrayerLockGuard(Dispatcher dispatcher)
@@ -38,7 +37,7 @@ public sealed class PrayerLockGuard : IDisposable
         _lockUntil is { } until && DateTimeOffset.Now < until ? until - DateTimeOffset.Now : TimeSpan.Zero;
 
     /// <summary>يبدأ فترة الحماية. تُستدعى مباشرة بعد نجاح قفل الشاشة.</summary>
-    public void Begin(int durationMinutes)
+    public void Begin(int durationMinutes, int maxRelocks = 5)
     {
         if (durationMinutes <= 0)
         {
@@ -48,6 +47,7 @@ public sealed class PrayerLockGuard : IDisposable
 
         _lockUntil = DateTimeOffset.Now.AddMinutes(durationMinutes);
         _relockCount = 0;
+        _maxRelocks = Math.Max(1, maxRelocks);
 
         Log.Info($"حارس القفل: الشاشة تبقى مقفولة {durationMinutes} دقيقة (حتى {_lockUntil:HH:mm}).");
     }
@@ -70,9 +70,9 @@ public sealed class PrayerLockGuard : IDisposable
         {
             if (_disposed || !IsActive) return;
 
-            if (_relockCount >= MaxRelocks)
+            if (_relockCount >= _maxRelocks)
             {
-                Log.Warn($"حارس القفل: توقّف بعد {MaxRelocks} محاولات فتح — احترامًا لحاجة المستخدم لجهازه.");
+                Log.Warn($"حارس القفل: توقّف بعد {_maxRelocks} محاولات فتح — احترامًا لحاجة المستخدم لجهازه.");
                 _lockUntil = null;
                 return;
             }
@@ -81,7 +81,7 @@ public sealed class PrayerLockGuard : IDisposable
             if (_disposed || !IsActive) return;
 
             _relockCount++;
-            Log.Info($"حارس القفل: إعادة قفل ({_relockCount}/{MaxRelocks})، " +
+            Log.Info($"حارس القفل: إعادة قفل ({_relockCount}/{_maxRelocks})، " +
                      $"يتبقّى {Remaining.TotalMinutes:F1} دقيقة.");
 
             PowerActionService.Execute(Core.Scheduling.PreIqamaAction.Lock);

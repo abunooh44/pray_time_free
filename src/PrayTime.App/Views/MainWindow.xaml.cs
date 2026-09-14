@@ -29,6 +29,12 @@ public partial class MainWindow : Window
             case nameof(_shell.Main.Progress):
                 UpdateProgressBar();
                 break;
+            case nameof(_shell.Main.NextHasIqama):
+                NextIqamaPanel.Visibility = _shell.Main.NextHasIqama
+                    ? Visibility.Visible
+                    : Visibility.Hidden;
+                break;
+
             case nameof(_shell.Main.IsPlaying):
                 var playing = _shell.Main.IsPlaying;
                 BtnStop.Visibility = playing ? Visibility.Visible : Visibility.Collapsed;

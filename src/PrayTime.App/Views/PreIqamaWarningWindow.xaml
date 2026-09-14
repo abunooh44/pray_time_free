@@ -55,33 +55,20 @@
                        Style="{StaticResource T.Faint}"
                        Text="ثانية" />
 
-            <TextBlock Margin="0,16,0,0"
+            <TextBlock x:Name="HintText"
+                       Margin="0,16,0,0"
                        HorizontalAlignment="Center"
                        Style="{StaticResource T.Faint}"
                        TextAlignment="Center"
                        TextWrapping="Wrap"
-                       Text="احفظ عملك الآن. يمكنك التأجيل إن كنت في أمر لا يحتمل الانقطاع." />
+                       Text="احفظ عملك الآن — لا يمكن تأجيل هذا الإجراء." />
 
-            <Grid Margin="0,22,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="10" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Button x:Name="BtnNow"
-                        Grid.Column="0"
-                        Click="OnNowClick"
-                        Content="نفّذ الآن"
-                        Style="{StaticResource Btn.Primary}" />
-
-                <Button x:Name="BtnPostpone"
-                        Grid.Column="2"
-                        Click="OnPostponeClick"
-                        Content="تأجيل"
-                        IsCancel="True"
-                        Style="{StaticResource Btn.Base}" />
-            </Grid>
+            <Button x:Name="BtnNow"
+                    Margin="0,22,0,0"
+                    HorizontalAlignment="Stretch"
+                    Click="OnNowClick"
+                    Content="اقفل الآن"
+                    Style="{StaticResource Btn.Primary}" />
         </StackPanel>
     </Border>
 </Window>

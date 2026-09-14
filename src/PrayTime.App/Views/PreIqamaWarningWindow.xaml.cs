@@ -10,11 +10,13 @@ using PrayTime.Core.Scheduling;
 namespace PrayTime.App.Views;
 
 /// <summary>
-/// تحذير قبل إنامة الجهاز أو قفله استعدادًا للإقامة.
+/// تحذير إلزامي قبل إنامة الجهاز أو قفله استعدادًا للإقامة.
 ///
-/// العدّ التنازلي والزر «تأجيل» ليسا ترفًا: إنامة جهاز بلا إنذار قد تُضيّع
-/// عملًا غير محفوظ أو تقطع مكالمة أو رفع ملف. الميزة هدفها تفريغ المستخدم
-/// للصلاة، لا الإضرار به.
+/// لا يوجد زر تأجيل عن قصد: زر التأجيل يُلغي الميزة عمليًا لأن المستخدم
+/// سيضغطه كل مرة. العدّ التنازلي يبقى — لا كمهرب بل كمهلة لحفظ العمل.
+///
+/// المخرج الحقيقي قبل الحدث لا أثناءه: تعطيل الميزة من الإعدادات،
+/// وحدّ محاولات إعادة القفل بعده.
 /// </summary>
 public partial class PreIqamaWarningWindow : Window
 {
@@ -88,29 +90,31 @@ public partial class PreIqamaWarningWindow : Window
 
         // قفل ويندز وحده يُفتح بعد ثانية؛ الحارس يُبقيه مقفولًا مدة الصلاة.
         if (_action == PreIqamaAction.Lock)
-            _shell.LockGuard.Begin(_shell.Settings.Behavior.LockDurationMinutes);
+            _shell.LockGuard.Begin(
+                _shell.Settings.Behavior.LockDurationMinutes,
+                _shell.Settings.Behavior.LockRelockLimit);
     }
 
     private void OnNowClick(object sender, RoutedEventArgs e) => Execute();
 
-    private void OnPostponeClick(object sender, RoutedEventArgs e)
-    {
-        _timer.Stop();
-        _executed = true;
-        Hide();
-        Log.Info($"أجّل المستخدم إجراء ما قبل الإقامة ({_action}).");
-    }
-
+    /// <summary>
+    /// النافذة لا تُغلق قبل تنفيذ الإجراء: Alt+F4 أو Esc أو زر النظام
+    /// كلها كانت ستصير زر «تأجيل» مقنّعًا.
+    /// </summary>
     protected override void OnClosing(CancelEventArgs e)
     {
-        // النافذة مُعاد استخدامها؛ إغلاقها يعني التأجيل لا الإنهاء.
-        if (!_shell.IsExiting)
+        if (!_shell.IsExiting && !_executed)
         {
             e.Cancel = true;
-            _timer.Stop();
-            _executed = true;
+            Log.Info("محاولة إغلاق نافذة ما قبل الإقامة — مرفوضة، الإجراء إلزامي.");
+        }
+        else if (!_shell.IsExiting)
+        {
+            // نُعيد استخدام النافذة، فنخفيها بدل إتلافها.
+            e.Cancel = true;
             Hide();
         }
+
         base.OnClosing(e);
     }
 }

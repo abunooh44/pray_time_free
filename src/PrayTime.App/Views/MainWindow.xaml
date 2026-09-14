@@ -118,18 +118,55 @@
                            Style="{StaticResource T.Numeric}"
                            Text="{Binding Countdown}" />
 
-                <StackPanel Margin="0,6,0,0"
-                            HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                    <TextBlock FontSize="15"
-                               FontWeight="SemiBold"
-                               Style="{StaticResource T.Base}"
-                               Text="{Binding NextPrayerName}" />
-                    <TextBlock Margin="8,0,0,0"
-                               FontSize="15"
-                               Style="{StaticResource T.Dim}"
-                               Text="{Binding NextPrayerTime}" />
-                </StackPanel>
+                <TextBlock Margin="0,2,0,0"
+                           HorizontalAlignment="Center"
+                           Style="{StaticResource T.Faint}"
+                           Text="{Binding RemainingMinutes}" />
+
+                <!--  الأذان والإقامة جنبًا إلى جنب  -->
+                <Border Margin="0,14,0,0"
+                        Padding="6,8"
+                        Background="{DynamicResource B.SurfaceAlt}"
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock HorizontalAlignment="Center"
+                                       Style="{StaticResource T.Faint}"
+                                       Text="{Binding NextPrayerName, StringFormat=أذان {0}}" />
+                            <TextBlock Margin="0,3,0,0"
+                                       HorizontalAlignment="Center"
+                                       FontSize="19"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource B.Gold}"
+                                       Style="{StaticResource T.Numeric}"
+                                       Text="{Binding NextPrayerTime}" />
+                        </StackPanel>
+
+                        <Border Grid.Column="1"
+                                Width="1"
+                                Margin="10,4"
+                                Background="{DynamicResource B.Line}" />
+
+                        <StackPanel x:Name="NextIqamaPanel" Grid.Column="2">
+                            <TextBlock HorizontalAlignment="Center"
+                                       Style="{StaticResource T.Faint}"
+                                       Text="الإقامة" />
+                            <TextBlock Margin="0,3,0,0"
+                                       HorizontalAlignment="Center"
+                                       FontSize="19"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource B.Teal}"
+                                       Style="{StaticResource T.Numeric}"
+                                       Text="{Binding NextIqamaTime}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
                 <!--  شريط تقدّم الوقت الحالي  -->
                 <Border x:Name="ProgressTrack"
@@ -149,16 +186,40 @@
         <Border Grid.Row="3" Margin="0,14,0,0" Style="{StaticResource Card}">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
+
+                    <!--  ترويسة الأعمدة  -->
+                    <Grid Margin="17,0,17,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="13" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="66" />
+                            <ColumnDefinition Width="66" />
+                            <ColumnDefinition Width="22" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1"
+                                   Style="{StaticResource T.Faint}"
+                                   Text="الصلاة" />
+                        <TextBlock Grid.Column="2"
+                                   HorizontalAlignment="Center"
+                                   Style="{StaticResource T.Faint}"
+                                   Text="الأذان" />
+                        <TextBlock Grid.Column="3"
+                                   HorizontalAlignment="Center"
+                                   Style="{StaticResource T.Faint}"
+                                   Text="الإقامة" />
+                    </Grid>
+
                     <ItemsControl ItemsSource="{Binding Rows}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:PrayerRowViewModel}">
                         <Border x:Name="Row" Style="{StaticResource RowStyle}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="13" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="66" />
+                                    <ColumnDefinition Width="66" />
+                                    <ColumnDefinition Width="22" />
                                 </Grid.ColumnDefinitions>
 
                                 <!--  مؤشّر الصلاة القادمة  -->
@@ -179,14 +240,24 @@
 
                                 <TextBlock x:Name="TimeText"
                                            Grid.Column="2"
+                                           HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
                                            FontSize="16"
                                            Style="{StaticResource T.Numeric}"
                                            Text="{Binding TimeText}" />
 
-                                <TextBlock x:Name="MuteIcon"
+                                <TextBlock x:Name="IqamaTime"
                                            Grid.Column="3"
-                                           Margin="10,0,0,0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="15"
+                                           Foreground="{DynamicResource B.TextDim}"
+                                           Style="{StaticResource T.Numeric}"
+                                           Text="{Binding IqamaText}" />
+
+                                <TextBlock x:Name="MuteIcon"
+                                           Grid.Column="4"
+                                           Margin="0"
                                            VerticalAlignment="Center"
                                            FontFamily="Segoe MDL2 Assets"
                                            FontSize="12"
@@ -206,6 +277,8 @@
                                 <Setter TargetName="NameText" Property="FontWeight" Value="SemiBold" />
                                 <Setter TargetName="TimeText" Property="Foreground" Value="{DynamicResource B.Gold}" />
                                 <Setter TargetName="TimeText" Property="FontWeight" Value="SemiBold" />
+                                <Setter TargetName="IqamaTime" Property="Foreground" Value="{DynamicResource B.Teal}" />
+                                <Setter TargetName="IqamaTime" Property="FontWeight" Value="SemiBold" />
                                 <Setter TargetName="Row" Property="BorderBrush" Value="{DynamicResource B.Line}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsMuted}" Value="True">
@@ -218,6 +291,8 @@
                                 <Setter TargetName="TimeText" Property="Foreground" Value="{DynamicResource B.TextDim}" />
                                 <Setter TargetName="NameText" Property="FontSize" Value="13" />
                                 <Setter TargetName="TimeText" Property="FontSize" Value="14" />
+                                <Setter TargetName="IqamaTime" Property="Text" Value="—" />
+                                <Setter TargetName="IqamaTime" Property="Foreground" Value="{DynamicResource B.TextFaint}" />
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>

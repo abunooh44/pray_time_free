@@ -10,6 +10,8 @@ namespace PrayTime.App.ViewModels;
 public sealed class PrayerRowViewModel : Observable
 {
     private string _timeText = "--:--";
+    private string _iqamaText = "";
+    private bool _hasIqama;
     private bool _isCurrent;
     private bool _isNext;
     private bool _isMuted;
@@ -24,6 +26,11 @@ public sealed class PrayerRowViewModel : Observable
     public string Name { get; }
 
     public string TimeText { get => _timeText; set => Set(ref _timeText, value); }
+
+    /// <summary>وقت الإقامة = وقت الأذان + التأخير المضبوط لهذه الصلاة.</summary>
+    public string IqamaText { get => _iqamaText; set => Set(ref _iqamaText, value); }
+
+    public bool HasIqama { get => _hasIqama; set => Set(ref _hasIqama, value); }
     public bool IsCurrent { get => _isCurrent; set => Set(ref _isCurrent, value); }
     public bool IsNext { get => _isNext; set => Set(ref _isNext, value); }
     public bool IsMuted { get => _isMuted; set => Set(ref _isMuted, value); }
@@ -52,6 +59,9 @@ public sealed class MainViewModel : Observable
     private string _playingLabel = "";
     private string _midnight = "--:--";
     private string _lastThird = "--:--";
+    private string _nextIqamaTime = "";
+    private bool _nextHasIqama;
+    private string _remainingMinutes = "";
     private string _miniCountdown = "--:--";
     private string _miniCaption = "";
     private bool _miniIsIqama;
@@ -74,6 +84,14 @@ public sealed class MainViewModel : Observable
     public string NextPrayerName { get => _nextPrayerName; private set => Set(ref _nextPrayerName, value); }
     public string NextPrayerTime { get => _nextPrayerTime; private set => Set(ref _nextPrayerTime, value); }
     public string Countdown { get => _countdown; private set => Set(ref _countdown, value); }
+
+    /// <summary>وقت إقامة الصلاة القادمة.</summary>
+    public string NextIqamaTime { get => _nextIqamaTime; private set => Set(ref _nextIqamaTime, value); }
+
+    public bool NextHasIqama { get => _nextHasIqama; private set => Set(ref _nextHasIqama, value); }
+
+    /// <summary>المتبقي بصيغة مقروءة، مثل «بعد ساعتين و١٥ دقيقة».</summary>
+    public string RemainingMinutes { get => _remainingMinutes; private set => Set(ref _remainingMinutes, value); }
     public string CountdownCaption { get => _countdownCaption; private set => Set(ref _countdownCaption, value); }
     public double Progress { get => _progress; private set => Set(ref _progress, value); }
     public string LocationName { get => _locationName; private set => Set(ref _locationName, value); }
@@ -124,6 +142,13 @@ public sealed class MainViewModel : Observable
         foreach (var row in Rows)
         {
             row.TimeText = Numerals.Time(today[row.Prayer]);
+
+            var config = _settings.Prayers[row.Prayer];
+            row.HasIqama = row.CanMute && config.IqamaEnabled && config.IqamaDelayMinutes > 0;
+            row.IqamaText = row.HasIqama
+                ? Numerals.Time(today[row.Prayer].AddMinutes(config.IqamaDelayMinutes))
+                : "";
+
             row.IsNext = next is { } n && n.Prayer == row.Prayer && n.At.Date == today[row.Prayer].Date;
             row.IsCurrent = current is { } c && c.Prayer == row.Prayer;
             row.IsMuted = row.CanMute && !_settings.Prayers[row.Prayer].AdhanEnabled;
@@ -135,6 +160,16 @@ public sealed class MainViewModel : Observable
             NextPrayerTime = Numerals.Time(np.At);
             Countdown = Numerals.Countdown(np.At - now);
             CountdownCaption = $"حتى أذان {np.Prayer.Ar()}";
+            RemainingMinutes = $"بعد {Numerals.HumanDuration(np.At - now)}";
+
+            var nextConfig = _settings.Prayers[np.Prayer];
+            NextHasIqama = np.Prayer != Prayer.Sunrise
+                           && nextConfig.IqamaEnabled
+                           && nextConfig.IqamaDelayMinutes > 0;
+
+            NextIqamaTime = NextHasIqama
+                ? Numerals.Time(np.At.AddMinutes(nextConfig.IqamaDelayMinutes))
+                : "";
         }
 
         UpdateMiniBar(now);

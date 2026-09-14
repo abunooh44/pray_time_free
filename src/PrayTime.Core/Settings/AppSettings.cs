@@ -231,6 +231,7 @@ public sealed class BehaviorSettings : Observable
     private int _preIqamaMinutes = 5;
     private int _preIqamaWarningSeconds = 45;
     private int _lockDurationMinutes = 20;
+    private int _lockRelockLimit = 5;
 
     public bool StartWithWindows { get => _startWithWindows; set => Set(ref _startWithWindows, value); }
     public bool HideOnClose { get => _hideOnClose; set => Set(ref _hideOnClose, value); }
@@ -266,6 +267,12 @@ public sealed class BehaviorSettings : Observable
     /// قفل ويندز وحده يُفتح فورًا؛ الحارس يعيد القفل خلال هذه المدة. صفر يعطّل الحارس.
     /// </summary>
     public int LockDurationMinutes { get => _lockDurationMinutes; set => Set(ref _lockDurationMinutes, Math.Clamp(value, 0, 60)); }
+
+    /// <summary>
+    /// كم مرة يُعيد الحارس القفل قبل أن يستسلم.
+    /// مخرج طوارئ مقصود: من احتاج جهازه فعلًا يصل إليه. ارفعه إن أردت إلزامًا أشد.
+    /// </summary>
+    public int LockRelockLimit { get => _lockRelockLimit; set => Set(ref _lockRelockLimit, Math.Clamp(value, 1, 50)); }
 }
 
 public sealed class SecuritySettings : Observable

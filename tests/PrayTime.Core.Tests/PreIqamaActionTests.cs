@@ -33,26 +33,67 @@ public class PreIqamaActionTests
 
         foreach (var prayer in PrayerNames.Adhanable)
         {
+            var adhan = events.Single(e => e.Prayer == prayer && e.Kind == EventKind.Adhan);
             var iqama = events.Single(e => e.Prayer == prayer && e.Kind == EventKind.Iqama);
             var action = events.Single(e => e.Prayer == prayer && e.Kind == EventKind.PreIqama);
 
-            Assert.Equal(5, (iqama.At - action.At).TotalMinutes);
+            // القاعدة: قبل الإقامة بالمهلة المطلوبة، ما لم يقربنا ذلك من الأذان
+            // أكثر من الحد الأدنى — والمغرب (إقامة بعد ٥ دقائق) هو الحالة التي تُقيَّد.
+            var expected = iqama.At.AddMinutes(-5);
+            var earliest = adhan.At.Add(ScheduleBuilder.MinGapAfterAdhan);
+            if (expected < earliest) expected = earliest;
+
+            Assert.Equal(expected, action.At);
+            Assert.True(action.At >= earliest, $"{prayer}: التنبيه قريب جدًا من الأذان");
         }
     }
 
     [Fact]
-    public void ActionNeverFiresBeforeTheAdhanItself()
+    public void ActionNeverLandsOnTheAdhanItself()
     {
-        // المغرب تأخير إقامته ٥ دقائق افتراضيًا، والمهلة المطلوبة ١٥ —
-        // الطرح المباشر يضع التنبيه قبل دخول الوقت بعشر دقائق.
-        var s = Settings(PreIqamaAction.Lock, 15);
-        var events = BuildToday(s);
+        // المغرب: الإقامة بعد ٥ دقائق، والمهلة المطلوبة ٥ — الطرح المباشر يضع
+        // التنبيه على لحظة الأذان تمامًا، فتُقفل الشاشة والأذان يُرفع.
+        var s = Settings(PreIqamaAction.Lock, 5);
+        s.Prayers.Maghrib.IqamaDelayMinutes = 5;
 
+        var events = BuildToday(s);
         var adhan = events.Single(e => e is { Prayer: Prayer.Maghrib, Kind: EventKind.Adhan });
         var action = events.Single(e => e is { Prayer: Prayer.Maghrib, Kind: EventKind.PreIqama });
+        var iqama = events.Single(e => e is { Prayer: Prayer.Maghrib, Kind: EventKind.Iqama });
 
-        Assert.Equal(adhan.At, action.At);
-        Assert.True(action.At >= adhan.At, "التنبيه سبق الأذان");
+        Assert.True(action.At > adhan.At, "التنبيه وقع على الأذان");
+        Assert.Equal(ScheduleBuilder.MinGapAfterAdhan, action.At - adhan.At);
+        Assert.True(action.At < iqama.At, "التنبيه لم يسبق الإقامة");
+    }
+
+    [Fact]
+    public void ActionStillRespectsTheRequestedLeadWhenThereIsRoom()
+    {
+        // إقامة بعد ٢٠ دقيقة ومهلة ٥ — لا حاجة لأي تقييد.
+        var s = Settings(PreIqamaAction.Lock, 5);
+        s.Prayers.Fajr.IqamaDelayMinutes = 20;
+
+        var events = BuildToday(s);
+        var adhan = events.Single(e => e is { Prayer: Prayer.Fajr, Kind: EventKind.Adhan });
+        var action = events.Single(e => e is { Prayer: Prayer.Fajr, Kind: EventKind.PreIqama });
+        var iqama = events.Single(e => e is { Prayer: Prayer.Fajr, Kind: EventKind.Iqama });
+
+        Assert.Equal(5, (iqama.At - action.At).TotalMinutes);
+        Assert.Equal(15, (action.At - adhan.At).TotalMinutes);
+    }
+
+    [Fact]
+    public void ActionNeverOvershootsTheIqamaWithAVeryShortDelay()
+    {
+        // إقامة بعد دقيقة واحدة: الحد الأدنى بعد الأذان (دقيقتان) يتجاوز الإقامة.
+        var s = Settings(PreIqamaAction.Lock, 5);
+        s.Prayers.Maghrib.IqamaDelayMinutes = 1;
+
+        var events = BuildToday(s);
+        var action = events.Single(e => e is { Prayer: Prayer.Maghrib, Kind: EventKind.PreIqama });
+        var iqama = events.Single(e => e is { Prayer: Prayer.Maghrib, Kind: EventKind.Iqama });
+
+        Assert.True(action.At <= iqama.At, "التنبيه تجاوز الإقامة نفسها");
     }
 
     [Fact]

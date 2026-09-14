@@ -7,6 +7,13 @@ namespace PrayTime.Core.Scheduling;
 /// <summary>يحوّل مواقيت يومٍ ما إلى قائمة أحداث صوتية مرتّبة زمنيًا.</summary>
 public static class ScheduleBuilder
 {
+    /// <summary>
+    /// أقل فاصل بين الأذان وإجراء ما قبل الإقامة.
+    /// قفل الشاشة لحظة رفع الأذان يقطعه ويربك المستخدم، وهو ما كان يحدث
+    /// كلما ساوت مهلة التنبيه تأخيرَ الإقامة.
+    /// </summary>
+    public static readonly TimeSpan MinGapAfterAdhan = TimeSpan.FromMinutes(2);
+
     public static PrayerDay BuildDay(DateOnly date, AppSettings settings) =>
         PrayerTimesCalculator.Calculate(
             date, settings.GeoLocation, settings.ToCalculationParameters(), settings.TimeZone);
@@ -43,10 +50,17 @@ public static class ScheduleBuilder
 
                     if (settings.Behavior.PreIqamaAction != PreIqamaAction.None)
                     {
-                        // لا يسبق الأذانَ أبدًا: لو كان تأخير الإقامة أقصر من مهلة الإجراء
-                        // لصار التنبيه قبل دخول الوقت أصلًا.
+                        // الهدف: قبل الإقامة بالمدة المطلوبة.
                         var actionAt = iqamaAt.AddMinutes(-settings.Behavior.PreIqamaMinutes);
-                        if (actionAt < at) actionAt = at;
+
+                        // لكن لا يقع على الأذان نفسه. حين يكون تأخير الإقامة مساويًا للمهلة
+                        // أو أقصر (المغرب مثلًا: إقامة بعد ٥ دقائق ومهلة ٥)، يقع الطرح على
+                        // لحظة الأذان تمامًا فتُقفل الشاشة والأذان يُرفع.
+                        var earliest = at.Add(MinGapAfterAdhan);
+                        if (actionAt < earliest) actionAt = earliest;
+
+                        // ولا يتجاوز الإقامة نفسها لو كان التأخير قصيرًا جدًا.
+                        if (actionAt > iqamaAt) actionAt = iqamaAt;
 
                         events.Add(new PrayerEvent(
                             prayer, EventKind.PreIqama, actionAt,
