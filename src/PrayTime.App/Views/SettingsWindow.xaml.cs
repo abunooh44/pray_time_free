@@ -77,6 +77,7 @@ public partial class SettingsWindow : Window
         AutoStartCheck.IsChecked = _settings.Behavior.StartWithWindows;
         StartMinimizedCheck.IsChecked = _settings.Ui.StartMinimized;
         HideOnCloseCheck.IsChecked = _settings.Behavior.HideOnClose;
+        WatchdogCheck.IsChecked = _settings.Behavior.WatchdogEnabled;
         KeepAwakeCheck.IsChecked = _settings.Audio.PreventSleepDuringAdhan;
         RequirePinCheck.IsChecked = _settings.Security.RequirePinForExit;
         ToleranceBox.Text = Fmt(_settings.Behavior.AdhanToleranceMinutes);
@@ -463,6 +464,7 @@ public partial class SettingsWindow : Window
 
         _settings.Behavior.StartWithWindows = AutoStartCheck.IsChecked == true;
         _settings.Behavior.HideOnClose = HideOnCloseCheck.IsChecked == true;
+        _settings.Behavior.WatchdogEnabled = WatchdogCheck.IsChecked == true;
         _settings.Behavior.AdhanToleranceMinutes = (int)tolerance;
 
         _settings.Security.RequirePinForExit = RequirePinCheck.IsChecked == true;

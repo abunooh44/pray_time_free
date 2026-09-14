@@ -223,6 +223,7 @@ public sealed class BehaviorSettings : Observable
 {
     private bool _startWithWindows = true;
     private bool _hideOnClose = true;
+    private bool _watchdogEnabled = true;
     private int _adhanToleranceMinutes = 5;
     private int _iqamaToleranceMinutes = 2;
     private int _startupGraceSeconds = 60;
@@ -233,6 +234,12 @@ public sealed class BehaviorSettings : Observable
 
     public bool StartWithWindows { get => _startWithWindows; set => Set(ref _startWithWindows, value); }
     public bool HideOnClose { get => _hideOnClose; set => Set(ref _hideOnClose, value); }
+
+    /// <summary>
+    /// مهمة في مجدول ويندز تتحقق دوريًا وتُعيد تشغيل التطبيق إن اختفى.
+    /// مفتاح Run يعمل عند تسجيل الدخول فقط، فلا يغطّي موت التطبيق في منتصف الجلسة.
+    /// </summary>
+    public bool WatchdogEnabled { get => _watchdogEnabled; set => Set(ref _watchdogEnabled, value); }
 
     /// <summary>أقصى تأخير مقبول لتشغيل أذان فات وقته (مثلًا بعد استيقاظ الجهاز من السبات).</summary>
     public int AdhanToleranceMinutes { get => _adhanToleranceMinutes; set => Set(ref _adhanToleranceMinutes, Math.Clamp(value, 0, 60)); }

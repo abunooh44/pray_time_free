@@ -62,6 +62,7 @@ public sealed class AppShell : IDisposable
         ApplyTheme(Settings.Ui.Theme);
         Tray.Initialize();
         Scheduler.Start();
+        WatchdogService.Sync(Settings.Behavior.WatchdogEnabled);
         SetMiniBarVisible(Settings.Ui.ShowMiniBar);
         SyncAutoStart();
         Main.Refresh();
@@ -251,9 +252,23 @@ public sealed class AppShell : IDisposable
 
         ApplyTheme(Settings.Ui.Theme);
         SyncAutoStart();
+        WatchdogService.Sync(Settings.Behavior.WatchdogEnabled);
         SetMiniBarVisible(Settings.Ui.ShowMiniBar);
         Scheduler.Reschedule();
         Main.Refresh();
+    }
+
+    /// <summary>
+    /// يكتب كل شيء مهم على القرص دون إنهاء التطبيق.
+    /// يُستدعى عند إشعار إغلاق ويندز: قد يُقتل التطبيق فجأة، وقد يُلغى الإغلاق.
+    /// </summary>
+    public void FlushState()
+    {
+        try { Store.SaveLedger(Ledger); }
+        catch (Exception ex) { Log.Warn($"تعذّر حفظ السجل: {ex.Message}"); }
+
+        try { Store.Save(Settings); }
+        catch (Exception ex) { Log.Warn($"تعذّر حفظ الإعدادات: {ex.Message}"); }
     }
 
     private void SyncAutoStart()

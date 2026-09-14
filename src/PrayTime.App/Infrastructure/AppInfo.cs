@@ -8,7 +8,7 @@ public static class AppInfo
 {
     public const string Name = "مواقيت";
     public const string FullName = "مواقيت — أوقات الصلاة";
-    public const string Version = "1.1.0";
+    public const string Version = "1.1.1";
 
     public const string Developer = "Rashid Al Aamri — سلطنة عُمان";
     public const string Phone = "+968 9545 4788";

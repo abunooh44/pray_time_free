@@ -46,6 +46,9 @@ public static class Uninstaller
             if (confirm != IdOk) return 2;
         }
 
+        // قبل إيقاف النسخ: وإلا أعاد الحارس تشغيل التطبيق أثناء إزالته.
+        WatchdogService.Uninstall();
+
         StopOtherInstances();
         RemoveRegistry();
         RemoveShortcuts();

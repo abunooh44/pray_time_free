@@ -450,6 +450,15 @@
                                   Content="زر الإغلاق يُخفي التطبيق بدل إنهائه"
                                   Style="{StaticResource Check.Base}" />
 
+                        <CheckBox x:Name="WatchdogCheck"
+                                  Content="حارس يعيد تشغيل التطبيق إن اختفى"
+                                  Style="{StaticResource Check.Base}" />
+
+                        <TextBlock Margin="24,-2,0,6"
+                                   Style="{StaticResource T.Faint}"
+                                   TextWrapping="Wrap"
+                                   Text="مهمة في مجدول مهام ويندز تتحقق كل ١٥ دقيقة. التشغيل التلقائي وحده يعمل عند تسجيل الدخول فقط، فلا يُعيد التطبيق إن مات في منتصف الجلسة." />
+
                         <CheckBox x:Name="KeepAwakeCheck"
                                   Content="منع الجهاز من النوم أثناء تشغيل الأذان"
                                   Style="{StaticResource Check.Base}" />
